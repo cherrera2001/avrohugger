@@ -1,18 +1,17 @@
 package avrohugger
 package matchers
 
-import stores.ClassStore
+import java.util.concurrent.ConcurrentHashMap
 
+import avrohugger.stores.ClassStore
 import treehugger.forest._
-import treehuggerDSL._
 import definitions._
-
 import org.apache.avro.Schema
 import org.apache.avro.Schema.{Type => AvroType}
+import treehuggerDSL._
 
-import java.util.concurrent.ConcurrentHashMap
-import scala.collection.convert.Wrappers.JConcurrentMapWrapper
 import scala.collection.JavaConverters._
+import scala.collection.convert.Wrappers.JConcurrentMapWrapper
 
 class TypeMatcher {
 
@@ -98,7 +97,7 @@ class TypeMatcher {
             if (maybeSchema.isDefined ) optionType(matchType(maybeSchema.get))
             else sys.error("no avro type found in this union")  
           }
-          else sys.error("unions not yet supported beyond nullable fields")
+          else AnyValClass
         }
         case x => sys.error( x + " is not supported or not a valid Avro type")
       }

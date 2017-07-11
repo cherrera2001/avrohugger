@@ -17,7 +17,7 @@ import scala.io.Source
   */
 object AvscFileSorter {
 
-  def sortSchemaFiles(files: Traversable[File]): Seq[File] = {
+  def sortSchemaFiles(files: Traversable[File]): List[File] = {
     val sortedButReversed = mutable.MutableList.empty[File]
     def normalizeInput(files: List[File]) = files.sortBy(file => file.getName)
     var pending: Traversable[File] = normalizeInput(files.toList)
@@ -26,7 +26,7 @@ object AvscFileSorter {
       sortedButReversed ++= unused
       pending = used
     }
-    sortedButReversed.reverse.toSeq
+    sortedButReversed.reverse.toList
   }
 
   def usedUnusedSchemas(files: Traversable[File]): (Traversable[File], Traversable[File]) = {

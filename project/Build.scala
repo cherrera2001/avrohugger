@@ -101,6 +101,6 @@ object MyBuild extends Build {
     .settings(
       libraryDependencies += "org.apache.avro" % "avro-tools" % "1.7.7"
      )
-    .dependsOn(core)
+    .dependsOn(core, filesorter)
 
 }

@@ -1,22 +1,13 @@
 package avrohugger
 package tool
 
-import format.abstractions.SourceFormat
+import java.io.{File, FilenameFilter, InputStream, PrintStream}
+import java.util.{ArrayList, LinkedHashSet, List, Set}
 
+import avrohugger.format.abstractions.SourceFormat
+import org.apache.avro.generic.GenericData.StringType
 import org.apache.avro.tool.Tool
-import org.apache.avro.generic.GenericData.StringType;
-import org.apache.avro.Schema;
-import org.apache.avro.compiler.specific.SpecificCompiler;
-import org.apache.avro.Protocol;
-
-import java.io.File
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.LinkedHashSet;
-import java.util.List;
+import avrohugger.filesorter.AvscFileSorter
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -55,7 +46,7 @@ class GeneratorTool(sourceFormat: SourceFormat,
     val method: String = args.get(arg);
     var inputs: List[File] = new ArrayList[File]();
     
-    for (i <- (arg + 1) until (args.size() - 1)) {
+    for (i <- (arg + 1) until args.size()) {
       Try {
          inputs.add(new File(args.get(i)));
       }
@@ -99,16 +90,10 @@ class GeneratorTool(sourceFormat: SourceFormat,
   private def determineInputs(inputs: List[File], filter: FilenameFilter): Array[File] = {
     val fileSet: Set[File] = new LinkedHashSet[File](); // preserve order and uniqueness
     for (file: File <- inputs.asScala) {
-      // if directory, look at contents to see what files match extension
-      if (file.isDirectory()) {
-        for (f: File <- file.listFiles(filter)) {
-          fileSet.add(f);
-        }
-      }
-      // otherwise, just add the file.
-      else {
-        fileSet.add(file);
-      }
+      var files = recursiveListFiles(file)
+      files = files.filter(x => x.isFile && x.getName.endsWith("avsc"))
+      val sortedFiles = AvscFileSorter.sortSchemaFiles(files)
+      sortedFiles.foreach( (f:File) => fileSet.add(f))
     }
     if (fileSet.size() > 0) {
       System.err.println("Input files to compile:");
@@ -121,6 +106,11 @@ class GeneratorTool(sourceFormat: SourceFormat,
     }
 
     Array[File](fileSet.asScala.toList:_*);
+  }
+
+  def recursiveListFiles(f: File): Array[File] = {
+    val these = f.listFiles
+    these ++ these.filter(_.isDirectory).flatMap(recursiveListFiles)
   }
 
   val SCHEMA_FILTER: FileExtensionFilter  =
