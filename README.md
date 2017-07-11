@@ -2,6 +2,7 @@
 
 [![Join the chat at https://gitter.im/julianpeeters/avrohugger](https://badges.gitter.im/julianpeeters/avrohugger.svg)](https://gitter.im/julianpeeters/avrohugger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## NOTE: THIS IS A MODIFIED VERSION THAT ALLOWS FOR TYPE ANY TO BE USED FOR UNIONS
 
 **Schema-to-case-class code generation for working with Avro in Scala.**
 
